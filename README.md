@@ -2,6 +2,29 @@
 
 Programa en C++ que implementa multiplicación de matrices optimizada usando **procesos** y **optimización por bloques** (blocking/tiling). Incluye análisis de rendimiento con la **Ley de Amdahl**.
 
+## Quick start
+
+Sigue estos pasos mínimos para compilar y ejecutar en Linux (o macOS):
+
+```bash
+# Crear directorio de build y compilar con CMake (recomendado)
+mkdir -p build && cd build
+cmake ..
+cmake --build .
+
+# Ejecutar el binario (desde build/ o la raíz si usaste Makefile)
+./matrix_mult
+```
+
+Si prefieres usar el `Makefile` (Linux/macOS):
+
+```bash
+make
+./matrix_mult
+```
+
+Lee la sección "🛠️ Compilación" más abajo para alternativas y opciones.
+
 ## 🚀 Características
 
 - ✅ **Multiplicación optimizada por bloques**: Aprovecha la localidad de caché (5-20x más rápido)
