@@ -1,0 +1,65 @@
+# Archivo de instrucciones específico - en cualquier nivel
+**/instrucciones.md
+instrucciones.md
+
+# Claude Code - en cualquier nivel
+**/.claude/
+**/.claude/**
+.claude/
+.claude/**
+
+# Archivos del sistema
+**/.DS_Store
+.DS_Store
+**/Thumbs.db
+Thumbs.db
+
+# Archivos temporales
+**/*.tmp
+**/*.temp
+**/*~
+**/*.swp
+**/*.swo
+*.tmp
+*.temp
+*~
+*.swp
+*.swo
+
+# Logs
+**/*.log
+*.log
+
+# CMake/C++ build artifacts
+/build/
+/CMakeFiles/
+/cmake-build-*/
+
+# CMake files
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Object files and libraries
+*.o
+*.obj
+*.lo
+*.la
+*.a
+*.lib
+*.so
+*.dylib
+
+# Executables
+matrix_mult
+*.exe
+
+# Debug files
+*.tmp
+*.temp
+
+# Editor/IDE files
+.vscode/
+.idea/
+obj/
+
