@@ -154,6 +154,7 @@ Muestra:
   - Eficiencia
   - Granularidad (Gruesa/Media/Fina)
   - Speedup máximo teórico
+- **Exporta automáticamente** los resultados a `benchmark_results.csv` para graficación
 
 #### 5. Configurar tamaño de matrices
 
@@ -166,6 +167,36 @@ Muestra:
 - Tamaño de bloques (auto-optimizado)
 - Número máximo de procesos
 - Núcleos disponibles
+
+## 📊 Visualización de Resultados
+
+### Generar Gráficas
+
+Después de ejecutar el **BENCHMARK COMPLETO** (opción 4), se genera automáticamente el archivo `benchmark_results.csv`. Para visualizar los resultados:
+
+```bash
+python3 plot_results.py
+```
+
+Este script genera 5 gráficas PNG:
+
+1. **grafica_speedup.png** - Speedup vs Procesos (Experimental vs Teórico vs Ideal)
+2. **grafica_eficiencia.png** - Eficiencia vs Procesos (con umbrales de granularidad)
+3. **grafica_tiempo.png** - Tiempo de Ejecución vs Procesos
+4. **grafica_gflops.png** - Rendimiento (GFLOPS) vs Procesos
+5. **grafica_resumen.png** - Panel con las 4 gráficas principales
+
+### Requisitos para Graficación
+
+```bash
+# Instalar dependencias de Python (si no están instaladas)
+pip3 install pandas matplotlib numpy
+
+# O usando conda
+conda install pandas matplotlib numpy
+```
+
+**Nota:** Las gráficas se guardan automáticamente como archivos PNG de alta resolución (300 DPI).
 
 ## 📊 Ejemplo de Salida
 
@@ -291,6 +322,8 @@ proyecto/
 │
 ├── Makefile                    # Compilación (Linux/macOS)
 ├── CMakeLists.txt              # Compilación (multiplataforma)
+├── plot_results.py             # Script Python para graficación
+├── benchmark_results.csv       # Resultados exportados (generado)
 └── README.md                   # Este archivo
 ```
 

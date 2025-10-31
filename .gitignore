@@ -65,3 +65,8 @@ matrix_mult
 .idea/
 obj/
 
+# Resultados y gráficas generadas
+benchmark_results.csv
+grafica_*.png
+grafica_resumen.png
+

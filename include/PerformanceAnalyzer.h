@@ -142,6 +142,17 @@ public:
      * @brief Imprime análisis de la fracción paralelizable
      */
     void print_f_analysis() const;
+
+    /**
+     * @brief Exporta resultados a archivo CSV para graficación
+     *
+     * Genera un archivo CSV con formato:
+     * Procesos,Tiempo(s),Speedup_Exp,Speedup_Amdahl,Eficiencia,GFLOPS,Granularidad
+     *
+     * @param filename Nombre del archivo CSV a generar
+     * @return true si se exportó correctamente, false en caso de error
+     */
+    bool export_to_csv(const std::string& filename) const;
 };
 
 #endif // PERFORMANCE_ANALYZER_H

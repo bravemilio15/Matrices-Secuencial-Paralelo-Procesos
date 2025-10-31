@@ -208,6 +208,9 @@ private:
         // Mostrar tabla completa
         analyzer.print_benchmark_table();
 
+        // Exportar resultados a CSV para graficación
+        analyzer.export_to_csv("benchmark_results.csv");
+
         Utils::pause();
     }
 

@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 #include <cmath>
 
 PerformanceAnalyzer::PerformanceAnalyzer()
@@ -276,4 +277,48 @@ void PerformanceAnalyzer::print_f_analysis() const {
 
     Utils::print_separator();
     std::cout << std::endl;
+}
+
+bool PerformanceAnalyzer::export_to_csv(const std::string& filename) const {
+    /**
+     * Exporta los resultados del benchmark a un archivo CSV
+     * para poder ser graficados con Python/matplotlib
+     */
+
+    if (results.empty()) {
+        std::cerr << "Error: No hay resultados para exportar." << std::endl;
+        return false;
+    }
+
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error: No se pudo abrir el archivo " << filename << " para escritura." << std::endl;
+        return false;
+    }
+
+    // Escribir encabezado CSV
+    file << "Procesos,Tiempo(s),Speedup_Exp,Speedup_Amdahl,Eficiencia,GFLOPS,Granularidad\n";
+
+    // Escribir datos
+    for (const auto& result : results) {
+        file << result.num_processes << ","
+             << std::fixed << std::setprecision(6) << result.time_seconds << ","
+             << std::fixed << std::setprecision(4) << result.speedup_exp << ","
+             << std::fixed << std::setprecision(4) << result.speedup_amdahl << ","
+             << std::fixed << std::setprecision(4) << result.efficiency << ","
+             << std::fixed << std::setprecision(3) << result.gflops << ","
+             << result.granularity << "\n";
+    }
+
+    file.close();
+
+    std::cout << "\n";
+    Utils::print_separator(60, '=');
+    std::cout << "Resultados exportados exitosamente a: " << filename << std::endl;
+    std::cout << "Para ver las graficas, ejecuta:\n";
+    std::cout << "  python3 plot_results.py\n";
+    Utils::print_separator(60, '=');
+    std::cout << "\n";
+
+    return true;
 }
