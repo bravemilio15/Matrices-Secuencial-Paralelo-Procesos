@@ -2,28 +2,54 @@
 
 Programa en C++ que implementa multiplicación de matrices optimizada usando **procesos** y **optimización por bloques** (blocking/tiling). Incluye análisis de rendimiento con la **Ley de Amdahl**.
 
-## Quick start
+## ⚡ Quick Start (FÁCIL - Sin instalar nada)
 
-Sigue estos pasos mínimos para compilar y ejecutar en Linux (o macOS):
+### Opción 1: Compilar y ejecutar automáticamente (MÁS SIMPLE)
 
 ```bash
-# Crear directorio de build y compilar con CMake (recomendado)
-mkdir -p build && cd build
-cmake ..
-cmake --build .
+./run.sh
+```
 
-# Ejecutar el binario (desde build/ o la raíz si usaste Makefile)
+Ese único comando:
+- ✅ Detecta tu sistema operativo
+- ✅ Verifica que tengas g++ instalado
+- ✅ Compila todo automáticamente
+- ✅ Pregunta si quieres ejecutar
+
+### Opción 2: Solo compilar (sin ejecutar)
+
+```bash
+./compile.sh
+```
+
+Luego ejecutar manualmente:
+```bash
 ./matrix_mult
 ```
 
-Si prefieres usar el `Makefile` (Linux/macOS):
+---
 
+**¿No tienes g++ instalado?** Sigue las instrucciones que aparecerán en pantalla.
+
+### Otras opciones (si ya conoces make/cmake):
+
+<details>
+<summary>Haz clic aquí para ver opciones avanzadas</summary>
+
+**Con Makefile (Linux/macOS):**
 ```bash
 make
 ./matrix_mult
 ```
 
-Lee la sección "🛠️ Compilación" más abajo para alternativas y opciones.
+**Con CMake (multiplataforma):**
+```bash
+mkdir build && cd build
+cmake ..
+cmake --build .
+./matrix_mult
+```
+</details>
 
 ## 🚀 Características
 
@@ -34,52 +60,23 @@ Lee la sección "🛠️ Compilación" más abajo para alternativas y opciones.
 - ✅ **Benchmark completo**: Prueba con 1, 2, 4, 8, ..., P_max procesos
 - ✅ **Multiplataforma**: Compatible con Linux, macOS, Windows
 
-## 📋 Requisitos
+## 📋 Requisitos Mínimos
 
-- **Compilador**: g++ o clang con soporte C++17
-- **Sistema operativo**:
-  - Linux (probado en ZorinOS/Ubuntu)
-  - macOS
-  - Windows (con algunas limitaciones en paralelización)
-- **CMake**: 3.10 o superior (opcional, para compilación alternativa)
+Solo necesitas:
+- **g++** instalado (compilador de C++)
+- **Linux** o **macOS** (Windows tiene limitaciones en paralelización)
 
-## 🛠️ Compilación
-
-### Opción 1: Makefile (Linux/macOS)
+**¿No tienes g++?**
 
 ```bash
-# Compilar
-make
+# Ubuntu/Debian/ZorinOS
+sudo apt-get update && sudo apt-get install build-essential
 
-# Compilar y ejecutar
-make run
-
-# Limpiar archivos compilados
-make clean
-
-# Ver información del sistema
-make info
-
-# Ver ayuda
-make help
+# macOS
+xcode-select --install
 ```
 
-### Opción 2: CMake (Multiplataforma)
-
-```bash
-# Crear directorio de build
-mkdir build
-cd build
-
-# Configurar con CMake
-cmake ..
-
-# Compilar
-cmake --build .
-
-# Ejecutar
-./matrix_mult
-```
+**El script `./run.sh` detectará automáticamente si falta g++ y te dirá qué comando ejecutar.**
 
 ## 📖 Uso
 
