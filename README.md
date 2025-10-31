@@ -4,7 +4,9 @@ Programa en C++ que implementa multiplicación de matrices optimizada usando **p
 
 ## ⚡ Quick Start (FÁCIL - Sin instalar nada)
 
-### Opción 1: Compilar y ejecutar automáticamente (MÁS SIMPLE)
+### 🐧 Linux / 🍎 macOS
+
+**Opción 1: Compilar y ejecutar automáticamente (MÁS SIMPLE)**
 
 ```bash
 ./run.sh
@@ -16,20 +18,40 @@ Ese único comando:
 - ✅ Compila todo automáticamente
 - ✅ Pregunta si quieres ejecutar
 
-### Opción 2: Solo compilar (sin ejecutar)
+**Opción 2: Solo compilar (sin ejecutar)**
 
 ```bash
 ./compile.sh
-```
-
-Luego ejecutar manualmente:
-```bash
 ./matrix_mult
 ```
 
+**¿No tienes g++ instalado?** Sigue las instrucciones que aparecerán en pantalla.
+
 ---
 
-**¿No tienes g++ instalado?** Sigue las instrucciones que aparecerán en pantalla.
+### 🪟 Windows
+
+**⚠️ IMPORTANTE:** El programa usa `fork()` que NO existe nativamente en Windows. Tienes 3 opciones:
+
+**1️⃣ WSL (Recomendada - Funciona al 100%)**
+```bash
+wsl --install        # En PowerShell como Administrador
+# Luego, dentro de WSL:
+./run.sh
+```
+
+**2️⃣ Git Bash (Simple pero limitado)**
+```bash
+./run.sh             # Abre Git Bash en la carpeta
+```
+
+**3️⃣ CMD nativo (Con limitaciones serias)**
+```cmd
+run.bat              # Compila pero SIN paralelización real
+matrix_mult.exe
+```
+
+📖 **Instrucciones detalladas:** Lee `INSTRUCCIONES_WINDOWS.txt`
 
 ### Otras opciones (si ya conoces make/cmake):
 

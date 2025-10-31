@@ -1,0 +1,142 @@
+╔═══════════════════════════════════════════════════════════╗
+║     MULTIPLICACIÓN DE MATRICES - WINDOWS                  ║
+║          Instrucciones Especiales                         ║
+╚═══════════════════════════════════════════════════════════╝
+
+⚠️ IMPORTANTE: El programa usa "fork()" que NO existe en Windows.
+   La paralelización con procesos tiene LIMITACIONES en Windows.
+
+═══════════════════════════════════════════════════════════
+
+🎯 OPCIÓN 1: WSL (RECOMENDADA - Funciona al 100%)
+
+   Windows Subsystem for Linux = Linux dentro de Windows
+
+   1. Abrir PowerShell como Administrador y ejecutar:
+
+      wsl --install
+
+   2. Reiniciar el PC
+
+   3. Abrir "Ubuntu" (o la distro que instalaste)
+
+   4. Navegar a la carpeta del proyecto:
+
+      cd /mnt/c/Users/TuUsuario/ruta/al/proyecto
+
+   5. Ejecutar normalmente:
+
+      ./run.sh
+
+   ✅ VENTAJAS: Funciona IGUAL que en Linux, sin limitaciones
+
+
+═══════════════════════════════════════════════════════════
+
+🎯 OPCIÓN 2: Git Bash (Simple pero limitado)
+
+   Si ya tienes Git instalado:
+
+   1. Clic derecho en la carpeta del proyecto
+      → "Git Bash Here"
+
+   2. Ejecutar:
+
+      ./run.sh
+
+   ⚠️ LIMITACIÓN: fork() no funciona bien, paralelización limitada
+
+
+═══════════════════════════════════════════════════════════
+
+🎯 OPCIÓN 3: CMD nativo de Windows (Con limitaciones)
+
+   1. Abrir CMD (Símbolo del sistema)
+
+   2. Navegar a la carpeta:
+
+      cd "C:\ruta\al\proyecto"
+
+   3. Ejecutar el script de Windows:
+
+      run.bat
+
+   4. Ejecutar el programa:
+
+      matrix_mult.exe
+
+   ⚠️ LIMITACIONES IMPORTANTES:
+      - fork() NO funciona en Windows nativo
+      - La paralelización usará un fallback secuencial
+      - Opción 3 del menú (paralelo) funcionará pero SIN speedup
+      - Opción 4 (benchmark) mostrará resultados incorrectos
+
+
+═══════════════════════════════════════════════════════════
+
+📦 INSTALAR g++ EN WINDOWS
+
+   Si run.bat dice que falta g++:
+
+   OPCIÓN A: MinGW-w64 (Más ligero)
+      1. Descargar: https://sourceforge.net/projects/mingw-w64/
+      2. Instalar
+      3. Agregar a PATH: C:\mingw64\bin
+
+   OPCIÓN B: MSYS2 (Más completo)
+      1. Descargar: https://www.msys2.org/
+      2. Instalar
+      3. Abrir MSYS2 terminal
+      4. Ejecutar: pacman -S mingw-w64-x86_64-gcc
+      5. Agregar a PATH: C:\msys64\mingw64\bin
+
+   OPCIÓN C: Visual Studio (Más pesado)
+      1. Descargar Visual Studio Community
+      2. Instalar "Desarrollo para escritorio con C++"
+
+
+═══════════════════════════════════════════════════════════
+
+🔍 VERIFICAR QUE g++ ESTÁ INSTALADO
+
+   Abrir CMD y ejecutar:
+
+      g++ --version
+
+   Deberías ver algo como:
+      g++ (MinGW-w64...) 11.2.0
+
+
+═══════════════════════════════════════════════════════════
+
+❓ RECOMENDACIONES
+
+   Para estudiantes/desarrollo:
+      → Usa WSL (Opción 1)
+      → Es la forma más profesional y sin limitaciones
+
+   Para prueba rápida:
+      → Usa Git Bash (Opción 2)
+      → Pero ten en cuenta las limitaciones
+
+   Solo si no puedes usar WSL:
+      → Usa CMD con run.bat (Opción 3)
+      → El programa funcionará pero sin paralelización real
+
+
+═══════════════════════════════════════════════════════════
+
+📊 TABLA COMPARATIVA
+
+   Característica         | WSL  | Git Bash | CMD Nativo
+   -----------------------|------|----------|------------
+   Paralelización (fork)  |  ✅  |    ⚠️    |     ❌
+   Speedup real           |  ✅  |    ⚠️    |     ❌
+   Benchmark correcto     |  ✅  |    ⚠️    |     ❌
+   Fácil de instalar      |  ⚠️  |    ✅    |     ✅
+   Rendimiento            |  ✅  |    ⚠️    |     ❌
+
+
+═══════════════════════════════════════════════════════════
+              ¿Más preguntas? Lee el README.md
+═══════════════════════════════════════════════════════════
