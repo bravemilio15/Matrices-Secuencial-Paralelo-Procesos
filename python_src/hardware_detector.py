@@ -3,10 +3,15 @@ hardware_detector.py
 Detecta información del hardware (CPU, caché, memoria) del sistema.
 """
 
-import psutil
 import platform
 import os
 import re
+
+try:
+    import psutil
+except ImportError:
+    print("Error: psutil no está instalado. Instálelo con: pip install psutil")
+    raise
 
 
 class HardwareDetector:
