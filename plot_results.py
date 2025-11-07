@@ -94,14 +94,15 @@ def plot_efficiency(df):
     colors = plt.cm.RdYlGn(efficiency / 100)  # Verde para alta eficiencia, rojo para baja
     bars = ax.bar(processes, efficiency, color=colors, edgecolor='black', linewidth=1.5, alpha=0.8)
 
-    # Línea de referencia al 80% (granularidad gruesa)
-    ax.axhline(y=80, color='orange', linestyle='--', linewidth=2, label='Umbral Granularidad Gruesa (80%)')
-    ax.axhline(y=50, color='red', linestyle='--', linewidth=2, label='Umbral Granularidad Media (50%)')
+    # Zonas de granularidad
+    ax.axhspan(80, 110, facecolor='green', alpha=0.15, label='Granularidad Gruesa (> 80%)')
+    ax.axhspan(50, 80, facecolor='yellow', alpha=0.2, label='Granularidad Media (50-80%)')
+    ax.axhspan(0, 50, facecolor='red', alpha=0.2, label='Granularidad Fina (< 50%)')
 
     # Configuración de ejes
     ax.set_xlabel('Número de Procesos (P)', fontweight='bold')
     ax.set_ylabel('Eficiencia (%)', fontweight='bold')
-    ax.set_title('Eficiencia vs Número de Procesos\n(Degradación por Overhead de Comunicación)',
+    ax.set_title('Eficiencia y Granularidad vs Número de Procesos',
                  fontweight='bold', pad=20)
     ax.set_ylim(0, 110)
 
@@ -218,10 +219,12 @@ def create_summary_figure(df):
     efficiency = df['Eficiencia'] * 100
     colors = plt.cm.RdYlGn(efficiency / 100)
     ax2.bar(processes, efficiency, color=colors, edgecolor='black', linewidth=1.5, alpha=0.8)
-    ax2.axhline(y=80, color='orange', linestyle='--', linewidth=1.5, label='80%')
+    ax2.axhspan(80, 110, facecolor='green', alpha=0.15, label='G. Gruesa (>80%)')
+    ax2.axhspan(50, 80, facecolor='yellow', alpha=0.2, label='G. Media (50-80%)')
+    ax2.axhspan(0, 50, facecolor='red', alpha=0.2, label='G. Fina (<50%)')
     ax2.set_xlabel('Procesos', fontweight='bold')
     ax2.set_ylabel('Eficiencia (%)', fontweight='bold')
-    ax2.set_title('Eficiencia vs Procesos', fontweight='bold')
+    ax2.set_title('Eficiencia y Granularidad', fontweight='bold')
     ax2.legend()
     ax2.grid(True, alpha=0.3, axis='y')
 
