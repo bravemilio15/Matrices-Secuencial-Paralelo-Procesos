@@ -3,6 +3,14 @@ matrix_multiplier.py
 Multiplicación de matrices usando procesos (paralelización basada en procesos, no hilos).
 """
 
+import os
+# Deshabilitar threading interno de NumPy para evitar conflictos con multiprocessing
+# DEBE estar ANTES de importar numpy
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['NUMEXPR_NUM_THREADS'] = '1'
+
 import numpy as np
 from multiprocessing import Process, Array
 import ctypes
@@ -47,14 +55,26 @@ class MatrixMultiplier:
 
     def multiply_sequential(self):
         """
-        Multiplicación secuencial usando NumPy (baseline para comparación).
+        Multiplicación secuencial usando el MISMO algoritmo que la versión paralela.
+        Esto permite una comparación justa del speedup real.
 
         Returns:
             numpy.ndarray: Matriz resultado C = A * B
             float: Tiempo de ejecución en segundos
         """
         start_time = time.time()
-        result = np.dot(self.A, self.B)
+
+        # Usar el mismo algoritmo que la versión paralela para comparación justa
+        result = np.zeros((self.size, self.size))
+
+        # Usar operaciones vectorizadas de NumPy para cada fila
+        for i in range(self.size):
+            # Para cada fila i de A, multiplicar con todas las columnas de B
+            # A[i, :] es la fila i (shape: (size,))
+            # B es la matriz completa (shape: (size, size))
+            # El producto punto de la fila con cada columna da la fila i del resultado
+            result[i, :] = np.dot(self.A[i, :], self.B)
+
         end_time = time.time()
 
         return result, end_time - start_time
@@ -75,13 +95,19 @@ class MatrixMultiplier:
         """
         start_time = time.time()
 
-        # Crear array compartido para el resultado
-        # ctypes.c_double es equivalente a double en C
+        # Crear arrays compartidos para A, B y C (evitar copiar datos a cada proceso)
+        shared_A = Array(ctypes.c_double, self.size * self.size)
+        shared_B = Array(ctypes.c_double, self.size * self.size)
         shared_C = Array(ctypes.c_double, self.size * self.size)
 
-        # Inicializar a ceros
-        np_shared = np.frombuffer(shared_C.get_obj()).reshape(self.size, self.size)
-        np_shared[:] = 0
+        # Copiar datos a memoria compartida
+        np_A = np.frombuffer(shared_A.get_obj()).reshape(self.size, self.size)
+        np_B = np.frombuffer(shared_B.get_obj()).reshape(self.size, self.size)
+        np_C = np.frombuffer(shared_C.get_obj()).reshape(self.size, self.size)
+
+        np_A[:] = self.A
+        np_B[:] = self.B
+        np_C[:] = 0
 
         # Calcular distribución de filas entre procesos
         rows_per_process = self.size // num_processes
@@ -96,10 +122,10 @@ class MatrixMultiplier:
             else:
                 end_row = (p + 1) * rows_per_process
 
-            # Crear y lanzar proceso
+            # Crear y lanzar proceso - ahora pasamos A y B compartidos
             proc = Process(
                 target=self._worker_process,
-                args=(start_row, end_row, shared_C)
+                args=(start_row, end_row, shared_A, shared_B, shared_C, self.size)
             )
             proc.start()
             processes.append(proc)
@@ -115,7 +141,7 @@ class MatrixMultiplier:
 
         return result, end_time - start_time
 
-    def _worker_process(self, start_row, end_row, shared_C):
+    def _worker_process(self, start_row, end_row, shared_A, shared_B, shared_C, size):
         """
         Función ejecutada por cada proceso worker.
         Calcula las filas asignadas de la matriz resultado.
@@ -123,18 +149,21 @@ class MatrixMultiplier:
         Args:
             start_row (int): Índice de fila inicial (inclusive)
             end_row (int): Índice de fila final (exclusivo)
+            shared_A (Array): Array compartido de lectura para matriz A
+            shared_B (Array): Array compartido de lectura para matriz B
             shared_C (Array): Array compartido para escribir resultados
+            size (int): Tamaño de las matrices
         """
-        # Convertir shared array a numpy para facilitar operaciones
-        np_C = np.frombuffer(shared_C.get_obj()).reshape(self.size, self.size)
+        # Convertir shared arrays a numpy para facilitar operaciones
+        np_A = np.frombuffer(shared_A.get_obj()).reshape(size, size)
+        np_B = np.frombuffer(shared_B.get_obj()).reshape(size, size)
+        np_C = np.frombuffer(shared_C.get_obj()).reshape(size, size)
 
-        # Multiplicación estándar i-j-k
-        for i in range(start_row, end_row):
-            for j in range(self.size):
-                value = 0.0
-                for k in range(self.size):
-                    value += self.A[i, k] * self.B[k, j]
-                np_C[i, j] = value
+        # OPTIMIZACIÓN: Calcular todo el bloque de filas de una vez usando np.dot
+        # Esto es más eficiente que calcular fila por fila
+        # np_A[start_row:end_row, :] es un bloque de filas (shape: (num_rows, size))
+        # np.dot lo multiplica por B completa de una sola vez
+        np_C[start_row:end_row, :] = np.dot(np_A[start_row:end_row, :], np_B)
 
     def multiply_parallel_blocks(self, num_processes, block_size=64):
         """
