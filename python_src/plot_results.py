@@ -8,6 +8,8 @@ Fecha: 2025-10-31
 """
 
 import pandas as pd
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
