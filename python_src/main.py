@@ -50,8 +50,9 @@ class MatrixMultiplicationApp:
         print("4. Ejecutar multiplicación paralela")
         print("5. Ejecutar benchmark completo (Requerido para tarea)")
         print("6. Ver resultados guardados")
-        print("7. Exportar resultados a CSV")
-        print("8. Salir")
+        print("7. Generar graficas")
+        print("8. Exportar resultados a CSV")
+        print("9. Salir")
         print("="*80)
 
     def run(self):
@@ -63,7 +64,7 @@ class MatrixMultiplicationApp:
 
         while True:
             self.show_menu()
-            option = get_valid_input("\nSeleccione una opción: ", valid_options=[1,2,3,4,5,6,7,8], input_type=int)
+            option = get_valid_input("\nSeleccione una opción: ", valid_options=[1,2,3,4,5,6,7,8,9], input_type=int)
 
             if option == 1:
                 self.show_hardware_info()
@@ -78,8 +79,10 @@ class MatrixMultiplicationApp:
             elif option == 6:
                 self.show_results()
             elif option == 7:
-                self.export_results()
+                self.generate_plots()
             elif option == 8:
+                self.export_results()
+            elif option == 9:
                 print("\n¡Hasta luego!")
                 sys.exit(0)
 
@@ -239,18 +242,15 @@ class MatrixMultiplicationApp:
             print(f"Caída de eficiencia: {scalability['efficiency_drop']:.2%}")
             print(f"Fracción paralelizable (f): {scalability['empirical_f']:.4f}")
 
-        # Exportar automáticamente
-        print_section("Paso 6: Exportando resultados")
-        self.analyzer.export_to_csv('benchmark_results.csv')
         print_success("Benchmark completo finalizado")
 
         print("\n" + "="*80)
         print("IMPORTANTE PARA LA TAREA:")
         print("="*80)
-        print("1. Los resultados se guardaron en 'benchmark_results.csv'")
-        print("2. Tome capturas de pantalla de las tablas mostradas")
-        print("3. Use las métricas de speedup y granularidad para su informe")
-        print("4. Ejecute 'python plot_results.py' para generar gráficas")
+        print("1. Tome capturas de pantalla de las tablas mostradas")
+        print("2. Use las metricas de speedup y granularidad para su informe")
+        print("3. Seleccione opcion 7 para generar graficas")
+        print("4. Seleccione opcion 8 si necesita exportar a CSV")
         print("="*80)
 
     def show_results(self):
@@ -266,6 +266,29 @@ class MatrixMultiplicationApp:
 
         if self.matrix_size:
             self.analyzer.print_comparison_table(self.matrix_size)
+
+    def generate_plots(self):
+        """Genera y muestra graficas de rendimiento"""
+        if self.analyzer is None or not self.analyzer.results:
+            print_error("No hay resultados para graficar")
+            return
+
+        if self.analyzer.sequential_time is None:
+            print_error("Primero debe ejecutar la version secuencial (opcion 3 o 5)")
+            return
+
+        if self.matrix_size is None:
+            print_error("No se ha configurado el tamano de matriz")
+            return
+
+        clear_screen()
+        print_header("GENERAR GRAFICAS")
+
+        print(f"\nGenerando graficas para matriz {self.matrix_size}x{self.matrix_size}")
+        print(f"Numero de resultados: {len(self.analyzer.results)}")
+
+        max_cores = self.hardware.cpu_count_logical
+        self.analyzer.plot_results(self.matrix_size, max_cores)
 
     def export_results(self):
         """Exporta resultados a CSV"""

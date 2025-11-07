@@ -6,6 +6,7 @@ Calcula speedup, eficiencia, granularidad y métricas de rendimiento.
 
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class PerformanceAnalyzer:
@@ -279,6 +280,135 @@ class PerformanceAnalyzer:
             'scalability': scalability_type,
             'empirical_f': self.empirical_f
         }
+
+    def plot_results(self, matrix_size, max_cores):
+        """
+        Genera grafica 2x2 con analisis de rendimiento.
+
+        Args:
+            matrix_size (int): Tamano de matriz usado
+            max_cores (int): Numero maximo de nucleos logicos del hardware
+        """
+        if not self.results:
+            print("Error: No hay resultados para graficar")
+            return
+
+        if self.sequential_time is None:
+            print("Error: No hay tiempo secuencial de referencia")
+            return
+
+        # Configurar estilo
+        plt.style.use('seaborn-v0_8-darkgrid')
+        plt.rcParams['font.size'] = 10
+        plt.rcParams['axes.labelsize'] = 11
+        plt.rcParams['axes.titlesize'] = 12
+        plt.rcParams['legend.fontsize'] = 9
+
+        # Crear figura con 4 subplots
+        fig = plt.figure(figsize=(14, 10))
+
+        # Extraer datos
+        df = self.get_results_dataframe()
+        processes = df['procesos'].values
+        speedup_exp = df['speedup_exp'].values
+        speedup_amdahl = df['speedup_amdahl'].values if df['speedup_amdahl'].notna().any() else None
+        efficiency = df['eficiencia'].values * 100
+        time = df['tiempo_s'].values
+        gflops = df['gflops'].values if 'gflops' in df.columns and df['gflops'].notna().any() else None
+
+        # Configurar eje X adaptativo
+        x_ticks = list(range(2, max_cores + 1, 2))
+
+        # SUBPLOT 1: Speedup
+        ax1 = plt.subplot(2, 2, 1)
+        ideal_speedup = processes.copy()
+
+        ax1.plot(processes, speedup_exp, 'o-', linewidth=2, markersize=8,
+                label='Speedup Experimental', color='#2ecc71')
+
+        if speedup_amdahl is not None:
+            ax1.plot(processes, speedup_amdahl, 's--', linewidth=2, markersize=6,
+                    label='Speedup Amdahl (Teorico)', color='#e74c3c')
+
+        ax1.plot(processes, ideal_speedup, ':', linewidth=2,
+                label='Speedup Ideal (Lineal)', color='#95a5a6')
+
+        ax1.set_xlabel('Numero de Procesos (P)', fontweight='bold')
+        ax1.set_ylabel('Speedup (S)', fontweight='bold')
+        ax1.set_title('Speedup vs Numero de Procesos', fontweight='bold')
+        ax1.set_xticks(x_ticks)
+        ax1.set_xlim(0, max_cores + 1)
+        ax1.grid(True, alpha=0.3)
+        ax1.legend(loc='best', framealpha=0.9)
+
+        # SUBPLOT 2: Eficiencia
+        ax2 = plt.subplot(2, 2, 2)
+        colors = plt.cm.RdYlGn(efficiency / 100)
+        bars = ax2.bar(processes, efficiency, color=colors, edgecolor='black',
+                      linewidth=1.5, alpha=0.8, width=1.5)
+
+        ax2.axhline(y=80, color='orange', linestyle='--', linewidth=2,
+                   label='Umbral Granularidad Gruesa (80%)')
+        ax2.axhline(y=50, color='red', linestyle='--', linewidth=2,
+                   label='Umbral Granularidad Media (50%)')
+
+        for bar, eff in zip(bars, efficiency):
+            height = bar.get_height()
+            ax2.text(bar.get_x() + bar.get_width()/2., height + 2,
+                    f'{eff:.1f}%', ha='center', va='bottom', fontsize=9, fontweight='bold')
+
+        ax2.set_xlabel('Numero de Procesos (P)', fontweight='bold')
+        ax2.set_ylabel('Eficiencia (%)', fontweight='bold')
+        ax2.set_title('Eficiencia vs Numero de Procesos', fontweight='bold')
+        ax2.set_xticks(x_ticks)
+        ax2.set_xlim(0, max_cores + 1)
+        ax2.set_ylim(0, 110)
+        ax2.grid(True, alpha=0.3, axis='y')
+        ax2.legend(loc='best', framealpha=0.9, fontsize=8)
+
+        # SUBPLOT 3: Tiempo de Ejecucion
+        ax3 = plt.subplot(2, 2, 3)
+        ax3.plot(processes, time, 'o-', linewidth=2, markersize=10,
+                color='#3498db', markerfacecolor='#e74c3c',
+                markeredgewidth=2, markeredgecolor='#3498db')
+
+        ax3.set_xlabel('Numero de Procesos (P)', fontweight='bold')
+        ax3.set_ylabel('Tiempo de Ejecucion (segundos)', fontweight='bold')
+        ax3.set_title('Tiempo de Ejecucion vs Numero de Procesos', fontweight='bold')
+        ax3.set_xticks(x_ticks)
+        ax3.set_xlim(0, max_cores + 1)
+        ax3.grid(True, alpha=0.3)
+
+        # SUBPLOT 4: GFLOPS
+        ax4 = plt.subplot(2, 2, 4)
+        if gflops is not None:
+            ax4.fill_between(processes, gflops, alpha=0.3, color='#9b59b6')
+            ax4.plot(processes, gflops, 'o-', linewidth=2, markersize=8,
+                    color='#9b59b6', markerfacecolor='white', markeredgewidth=2)
+
+            ax4.set_xlabel('Numero de Procesos (P)', fontweight='bold')
+            ax4.set_ylabel('GFLOPS (Giga Operaciones/s)', fontweight='bold')
+            ax4.set_title('Rendimiento (GFLOPS) vs Numero de Procesos', fontweight='bold')
+            ax4.set_xticks(x_ticks)
+            ax4.set_xlim(0, max_cores + 1)
+            ax4.grid(True, alpha=0.3)
+        else:
+            ax4.text(0.5, 0.5, 'GFLOPS no disponible',
+                    ha='center', va='center', transform=ax4.transAxes, fontsize=12)
+            ax4.set_xticks(x_ticks)
+            ax4.set_xlim(0, max_cores + 1)
+
+        # Titulo principal con informacion del sistema
+        f_text = f"f: {self.empirical_f:.4f}" if self.empirical_f else "f: N/A"
+        suptitle = f'Analisis de Rendimiento - Multiplicacion de Matrices\n'
+        suptitle += f'Matriz: {matrix_size}x{matrix_size}  |  Nucleos: {max_cores}  |  {f_text}'
+
+        plt.suptitle(suptitle, fontsize=14, fontweight='bold', y=0.98)
+        plt.tight_layout(rect=[0, 0, 1, 0.96])
+
+        print("\nMostrando graficas...")
+        print("Cierra la ventana para continuar.")
+        plt.show()
 
 
 # Testing
