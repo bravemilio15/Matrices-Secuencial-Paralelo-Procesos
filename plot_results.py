@@ -94,6 +94,9 @@ def plot_efficiency(df):
     colors = plt.cm.RdYlGn(efficiency / 100)  # Verde para alta eficiencia, rojo para baja
     bars = ax.bar(processes, efficiency, color=colors, edgecolor='black', linewidth=1.5, alpha=0.8)
 
+    # Línea de tendencia para la eficiencia
+    ax.plot(processes, efficiency, 'o-', color='#3498db', linewidth=2, markersize=8, label='Tendencia Eficiencia')
+
     # Zonas de granularidad
     ax.axhspan(80, 110, facecolor='green', alpha=0.15, label='Granularidad Gruesa (> 80%)')
     ax.axhspan(50, 80, facecolor='yellow', alpha=0.2, label='Granularidad Media (50-80%)')
@@ -219,6 +222,7 @@ def create_summary_figure(df):
     efficiency = df['Eficiencia'] * 100
     colors = plt.cm.RdYlGn(efficiency / 100)
     ax2.bar(processes, efficiency, color=colors, edgecolor='black', linewidth=1.5, alpha=0.8)
+    ax2.plot(processes, efficiency, 'o-', color='#3498db', linewidth=2, markersize=5, label='Tendencia')
     ax2.axhspan(80, 110, facecolor='green', alpha=0.15, label='G. Gruesa (>80%)')
     ax2.axhspan(50, 80, facecolor='yellow', alpha=0.2, label='G. Media (50-80%)')
     ax2.axhspan(0, 50, facecolor='red', alpha=0.2, label='G. Fina (<50%)')
